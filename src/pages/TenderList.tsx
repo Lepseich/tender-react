@@ -24,7 +24,6 @@ const TenderList = () => {
 
                 <div className="grid gap-6">
                     {filteredTenders.map(t => ( 
-                        /* ИСПОЛЬЗУЕМ t.id В КАЧЕСТВЕ КЛЮЧА */
                         <div key={t.id} className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 hover:shadow-md transition-shadow flex justify-between items-center">
                             <div className="flex flex-col gap-1">
                                 <span className="text-xl font-bold text-slate-800">{t.title}</span>
