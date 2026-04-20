@@ -1,18 +1,21 @@
 import { useState, useEffect } from 'react'
 import { Routes, Route, NavLink } from 'react-router-dom';
 import './App.css'
-import { mockUsers, mockTenders } from './data/mockData';
+import { mockUsers, mockTenders, mockBids } from './data/mockData';
 import type { IUser, ITender } from './types';
 import TenderList from './pages/TenderList'
 import Login from './pages/Login'
 import Registration from './pages/Registration'
 import ProtectedRoute from './components/ProtectedRoute'
+import CreateTender from './pages/CreateTender';
+import MyBids from './pages/MyBids';
+import TenderDetail from './pages/TenderDetail';
 
 
 
 
 function App() {
-  const [currentUser, setCurrentUser] = useState<IUser | null>(mockUsers[0]);
+  const [currentUser, setCurrentUser] = useState<IUser | null>(mockUsers[1]);
   const [users, setUsers] = useState<IUser[]>(() => {
     const saved = localStorage.getItem('tender-users');
     return saved !== null ? JSON.parse(saved) : mockUsers;
@@ -21,6 +24,11 @@ function App() {
     const saved = localStorage.getItem('tender-posts');
     return saved !== null ? JSON.parse(saved) : mockTenders;
   });
+  const [bids, setBids] = useState(() => {
+    const saved = localStorage.getItem('bids-posts');
+    return saved !== null ? JSON.parse(saved) : mockBids;
+  });
+
   const addTender = (newTender: ITender) => {
     setTenders([...tenders, newTender]);
   }
@@ -36,6 +44,9 @@ function App() {
   useEffect(() => {
     localStorage.setItem('tender-posts', JSON.stringify(tenders))
   }, [tenders]);
+  useEffect(() => {
+    localStorage.setItem('bids-posts', JSON.stringify(bids))
+  }, [bids]);
   return (
     <>
 
@@ -53,6 +64,9 @@ function App() {
         {currentUser?.role === 'company' && (
           <NavLink to="/create" className="text-blue-500 font-bold">Створити тендер</NavLink>
         )}
+        {currentUser?.role === 'user' && (
+          <NavLink to="/my-bids" className="text-blue-500 font-bold">Мої заявки</NavLink>
+        )}
         {currentUser && (
           <span>"Привіт, {currentUser?.name}"</span>
         )}
@@ -67,7 +81,7 @@ function App() {
       </nav>
 
       <Routes>
-        <Route path="/" element={<TenderList />} />
+        <Route path="/" element={<TenderList tenders={tenders}/>} />
         <Route path="/registration" element={<Registration onReg={handleRegister} />} />
         <Route path="/login" element={<Login onLogin={setCurrentUser} allUsers={users} />} />
         <Route path="/admin" element={
@@ -78,12 +92,21 @@ function App() {
 
         <Route path="/create" element={
           <ProtectedRoute user={currentUser} requiredRole="company">
-            {/* Тут будет твой компонент CreateTender */}
-            <h1>Страница создания тендера</h1>
+            <CreateTender onAddTender={addTender} currentUserId={currentUser!.id} />
           </ProtectedRoute>
         } />
+        <Route path="/my-bids" element={
+          <ProtectedRoute user={currentUser} requiredRole="user">
+            <MyBids currentUser={currentUser!} allBids={bids}></MyBids>
+          </ProtectedRoute>
+        } />
+        <Route path='/tender/:tenderId' element={
+          <ProtectedRoute user={currentUser}>
+            <TenderDetail tenders={tenders} currentUser={currentUser!}></TenderDetail>
+          </ProtectedRoute>
+        }/>
       </Routes>
-    </>
+    </>   
   );
 }
 

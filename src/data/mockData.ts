@@ -1,4 +1,4 @@
-import type { IUser, ITender } from '../types';
+import type { IUser, ITender, IBid } from '../types';
 
 
 export const mockTenders: ITender[] = [
@@ -53,4 +53,28 @@ export const mockUsers: IUser[]= [
         avatar: '#'    
     },
 
+]
+export const mockBids: IBid[]=[
+    {
+        id: 1,
+        tenderId: 1,
+        userId: 777,
+        message: "test1",
+        price: 10000,
+        status: "pending",
+    },{
+        id: 2,
+        tenderId: 2,
+        userId: 777,
+        message: "test2",
+        price: 20000,
+        status: "accepted",
+    },{
+        id: 3,
+        tenderId: 3,
+        userId: 777,
+        message: "test3",
+        price: 30000,
+        status: "rejected",
+    }
 ]

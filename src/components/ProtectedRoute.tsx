@@ -13,7 +13,7 @@ const ProtecredRoute = ({ user, requiredRole, children }: ProtecterProps) => {
         if (!user) {
             return <Navigate to="/login" />
 
-        } else if (requiredRole !== null && user.role !== requiredRole) {
+        } else if (requiredRole && user.role !== requiredRole) {
             return <Navigate to="/" />
         } else {
             return <>{children}</>

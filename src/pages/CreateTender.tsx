@@ -28,7 +28,7 @@ const CreateTender = ({ onAddTender, currentUserId }: TenderProps) => {
             resolver: zodResolver(tenderSchema)
         });
     const navigate = useNavigate();
-    const onSubmit = (data: any) => {
+    const onSubmit = (data: TenderFields) => {
         const newTender: ITender = {
             id: Date.now(),
             title: data.title,
@@ -38,5 +38,26 @@ const CreateTender = ({ onAddTender, currentUserId }: TenderProps) => {
             companyId: currentUserId,
             status: 'active',
         }
+        onAddTender(newTender);
+        navigate('/');
     }
-}
+
+
+
+    return (
+        <>
+            <form action="" onSubmit={handleSubmit(onSubmit)}>
+                <h1>Назва Тендеру</h1>
+                <input type="text" placeholder='Введіть назву: '{...register('title')}/>
+                <h1>Бюджет</h1>
+                <input type="number" placeholder='Введіть бюджет: ' {...register('budget', { valueAsNumber: true })}/>
+                <h1>Опис</h1>
+                <textarea placeholder='Опис: ' {...register('description')}></textarea>
+                <h1>Дедлайн</h1>
+                <input type="datetime-local" {...register('deadline')}/>
+                <button type="submit">Опублікувати тендер</button>
+            </form>
+        </>
+    );
+} 
+export default CreateTender

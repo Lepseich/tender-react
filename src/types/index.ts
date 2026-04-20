@@ -14,3 +14,11 @@ export interface ITender {
     companyId: number,
     status: 'active' | 'closed' | 'pending',
 }
+export interface IBid {
+    id: number,
+    tenderId: number,
+    userId: number,
+    message: string,
+    price: number,
+    status: 'pending' | 'accepted' | 'rejected', 
+}
