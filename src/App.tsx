@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Routes, Route, NavLink } from 'react-router-dom';
 import './App.css'
 import { mockUsers, mockTenders, mockBids } from './data/mockData';
-import type { IUser, ITender } from './types';
+import type { IUser, ITender, IBid } from './types';
 import TenderList from './pages/TenderList'
 import Login from './pages/Login'
 import Registration from './pages/Registration'
@@ -15,7 +15,7 @@ import TenderDetail from './pages/TenderDetail';
 
 
 function App() {
-  const [currentUser, setCurrentUser] = useState<IUser | null>(mockUsers[1]);
+  const [currentUser, setCurrentUser] = useState<IUser | null>(mockUsers[0]);
   const [users, setUsers] = useState<IUser[]>(() => {
     const saved = localStorage.getItem('tender-users');
     return saved !== null ? JSON.parse(saved) : mockUsers;
@@ -37,6 +37,10 @@ function App() {
     setUsers([...users, newUser]);
     setCurrentUser(newUser);
   }
+  const handleAddBid = (newBid: IBid) => {
+    setBids([...bids, newBid]);
+  }
+
 
   useEffect(() => {
     localStorage.setItem('tender-users', JSON.stringify(users))
@@ -102,7 +106,7 @@ function App() {
         } />
         <Route path='/tender/:tenderId' element={
           <ProtectedRoute user={currentUser}>
-            <TenderDetail tenders={tenders} currentUser={currentUser!}></TenderDetail>
+            <TenderDetail onAddBid={handleAddBid} tenders={tenders} currentUser={currentUser!} allBids={bids}></TenderDetail>
           </ProtectedRoute>
         }/>
       </Routes>
