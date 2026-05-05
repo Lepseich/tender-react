@@ -10,12 +10,13 @@ import ProtectedRoute from './components/ProtectedRoute'
 import CreateTender from './pages/CreateTender';
 import MyBids from './pages/MyBids';
 import TenderDetail from './pages/TenderDetail';
+import MyTenders from './pages/MyTenders';
 
 
 
 
 function App() {
-  const [currentUser, setCurrentUser] = useState<IUser | null>(mockUsers[0]);
+  const [currentUser, setCurrentUser] = useState<IUser | null>(mockUsers[2]);
   const [users, setUsers] = useState<IUser[]>(() => {
     const saved = localStorage.getItem('tender-users');
     return saved !== null ? JSON.parse(saved) : mockUsers;
@@ -40,7 +41,27 @@ function App() {
   const handleAddBid = (newBid: IBid) => {
     setBids([...bids, newBid]);
   }
+  const changeBidStatus = (bidId: number, newStatus: 'accepted' | 'rejected') => {
+    setBids(bids.map((t: IBid) => t.id === bidId ? { ...t, status: newStatus } : t));
 
+
+    if (newStatus === 'accepted') {
+      const currentBid = bids.find((b: IBid) => b.id === bidId);
+      if (currentBid) {
+        closeTender(currentBid.tenderId);
+      }
+    }
+  };
+  const closeTender = (tenderId: number) => {
+    setTenders(tenders.map((t: ITender) => {
+      if (t.id === tenderId) {
+        return { ...t, status: 'closed' };
+      } else {
+        return t
+      }
+
+    }));
+  }
 
   useEffect(() => {
     localStorage.setItem('tender-users', JSON.stringify(users))
@@ -68,6 +89,9 @@ function App() {
         {currentUser?.role === 'company' && (
           <NavLink to="/create" className="text-blue-500 font-bold">Створити тендер</NavLink>
         )}
+        {currentUser?.role === 'company' && (
+          <NavLink to="/my-tenders" className="text-blue-500 font-bold">Мої Тендери</NavLink>
+        )}
         {currentUser?.role === 'user' && (
           <NavLink to="/my-bids" className="text-blue-500 font-bold">Мої заявки</NavLink>
         )}
@@ -85,7 +109,7 @@ function App() {
       </nav>
 
       <Routes>
-        <Route path="/" element={<TenderList tenders={tenders}/>} />
+        <Route path="/" element={<TenderList tenders={tenders} />} />
         <Route path="/registration" element={<Registration onReg={handleRegister} />} />
         <Route path="/login" element={<Login onLogin={setCurrentUser} allUsers={users} />} />
         <Route path="/admin" element={
@@ -106,11 +130,16 @@ function App() {
         } />
         <Route path='/tender/:tenderId' element={
           <ProtectedRoute user={currentUser}>
-            <TenderDetail onAddBid={handleAddBid} tenders={tenders} currentUser={currentUser!} allBids={bids}></TenderDetail>
+            <TenderDetail onAddBid={handleAddBid} tenders={tenders} currentUser={currentUser!} allBids={bids} onChangeBidStatus={changeBidStatus}></TenderDetail>
           </ProtectedRoute>
-        }/>
+        } />
+        <Route path='/my-tenders' element={
+          <ProtectedRoute user={currentUser} requiredRole="company">
+            <MyTenders tenders={tenders} currentUser={currentUser!}></MyTenders>
+          </ProtectedRoute>
+        } />
       </Routes>
-    </>   
+    </>
   );
 }
 
