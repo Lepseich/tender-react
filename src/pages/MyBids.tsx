@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import type { IBid, IUser } from '../types';
-import { mockBids } from '../data/mockData';
+
 
 
 export interface MyBidsProps {

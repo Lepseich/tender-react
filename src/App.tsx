@@ -11,6 +11,8 @@ import CreateTender from './pages/CreateTender';
 import MyBids from './pages/MyBids';
 import TenderDetail from './pages/TenderDetail';
 import MyTenders from './pages/MyTenders';
+import Profile from './pages/Profile';
+import ProtecredRoute from './components/ProtectedRoute';
 
 
 
@@ -96,7 +98,7 @@ function App() {
           <NavLink to="/my-bids" className="text-blue-500 font-bold">Мої заявки</NavLink>
         )}
         {currentUser && (
-          <span>"Привіт, {currentUser?.name}"</span>
+          <NavLink to="/prof" className="text-slate-600 font-bold">Профіль</NavLink>
         )}
         {currentUser && (
           <button
@@ -138,6 +140,13 @@ function App() {
             <MyTenders tenders={tenders} currentUser={currentUser!}></MyTenders>
           </ProtectedRoute>
         } />
+        <Route path='/prof' element={
+          <ProtectedRoute user={currentUser}>
+            <Profile currentUser={currentUser!} tenders={tenders} allBids={bids}></Profile>
+          </ProtectedRoute>
+        } />
+
+
       </Routes>
     </>
   );
